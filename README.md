@@ -1,4 +1,4 @@
-# Todo App
+# Todo List
 
 A minimal, fast, and clean Todo application built to focus on fundamentals:
 clear state management, local persistence, and a polished UI without unnecessary complexity.
