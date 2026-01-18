@@ -6,42 +6,32 @@ import FilterTabs from "./components/FilterTabs.jsx";
 import TaskList from "./components/TaskList.jsx";
 
 export default function App() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(() => loadTasks());
   const [filter, setFilter] = useState('all');
 
-  // Load tasks on initialization
+  // Sync tasks to localStorage whenever they change
   useEffect(() => {
-    const loadedTasks = loadTasks();
-    setTasks(loadedTasks);
-  }, []);
+    saveTasks(tasks);
+  }, [tasks]);
 
-  // Helper to update tasks and save to localStorage
-  const updateTasks = (updater) => {
-    setTasks(prevTasks => {
-      const updated = updater(prevTasks);
-      saveTasks(updated);
-      return updated;
-    });
-  };
-
-  // Add task (newest first, Date.now ID)
+  // Add task (newest first, crypto.randomUUID ID)
   const handleAddTask = (title) => {
     const trimmed = title.trim();
     if (!trimmed) return;
 
     const newTask = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       title: trimmed,
       completed: false,
       createdAt: new Date().toISOString()
     };
 
-    updateTasks(prevTasks => [newTask, ...prevTasks]);
+    setTasks(prevTasks => [newTask, ...prevTasks]);
   };
 
   // Toggle complete
   const handleToggleComplete = (id) => {
-    updateTasks(prevTasks =>
+    setTasks(prevTasks =>
       prevTasks.map(task =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
@@ -50,7 +40,7 @@ export default function App() {
 
   // Delete task
   const handleDeleteTask = (id) => {
-    updateTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
   };
 
   // Change filter

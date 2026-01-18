@@ -1,7 +1,5 @@
-import { mockTasks } from '../data/mockTasks.js';
-
 /**
- * Load tasks from localStorage, fallback to mockTasks if nothing exists or parsing fails
+ * Load tasks from localStorage, fallback to empty array if nothing exists or parsing fails
  * @returns {Array} Array of task objects
  */
 export function loadTasks() {
@@ -17,8 +15,8 @@ export function loadTasks() {
     // Fail silently
   }
   
-  // Fallback to mockTasks
-  return mockTasks;
+  // Fallback to empty array
+  return [];
 }
 
 /**
