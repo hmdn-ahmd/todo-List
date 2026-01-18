@@ -1,6 +1,6 @@
 import TaskItem from './TaskItem';
 
-export default function TaskList({ tasks, onToggle, onDelete }) {
+export default function TaskList({ tasks, onToggle, onDelete, onEdit }) {
   if (tasks.length === 0) {
     return (
       <div className="text-center py-8 text-neutral-500 text-sm">
@@ -17,6 +17,7 @@ export default function TaskList({ tasks, onToggle, onDelete }) {
           task={task}
           onToggle={onToggle}
           onDelete={onDelete}
+          onEdit={onEdit}
         />
       ))}
     </ul>

@@ -4,6 +4,7 @@ import Header from "./components/Header.jsx";
 import TaskInput from "./components/TaskInput.jsx";
 import FilterTabs from "./components/FilterTabs.jsx";
 import TaskList from "./components/TaskList.jsx";
+import Footer from "./components/Footer.jsx";
 
 export default function App() {
   const [tasks, setTasks] = useState(() => loadTasks());
@@ -43,6 +44,20 @@ export default function App() {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
   };
 
+  // Clear completed tasks
+  const handleClearCompleted = () => {
+    setTasks(prevTasks => prevTasks.filter(task => !task.completed));
+  };
+
+  // Edit task title
+  const handleEditTask = (id, newTitle) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === id ? { ...task, title: newTitle } : task
+      )
+    );
+  };
+
   // Change filter
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
@@ -56,6 +71,7 @@ export default function App() {
     : tasks;
 
   const pendingCount = tasks.filter(t => !t.completed).length;
+  const completedCount = tasks.filter(t => t.completed).length;
 
   return (
     <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
@@ -68,6 +84,11 @@ export default function App() {
             tasks={filteredTasks}
             onToggle={handleToggleComplete}
             onDelete={handleDeleteTask}
+            onEdit={handleEditTask}
+          />
+          <Footer
+            completedCount={completedCount}
+            onClearCompleted={handleClearCompleted}
           />
         </div>
       </div>
