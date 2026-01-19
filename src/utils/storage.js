@@ -31,3 +31,33 @@ export function saveTasks(tasks) {
     // Fail silently
   }
 }
+
+/**
+ * Load sort order from localStorage, fallback to 'newest'
+ * @returns {string} Sort order: 'newest' or 'oldest'
+ */
+export function loadSortOrder() {
+  try {
+    const stored = localStorage.getItem('sortOrder');
+    if (stored === 'newest' || stored === 'oldest') {
+      return stored;
+    }
+  } catch (error) {
+    // Fail silently
+  }
+  
+  // Fallback to newest
+  return 'newest';
+}
+
+/**
+ * Save sort order to localStorage
+ * @param {string} sortOrder - Sort order: 'newest' or 'oldest'
+ */
+export function saveSortOrder(sortOrder) {
+  try {
+    localStorage.setItem('sortOrder', sortOrder);
+  } catch (error) {
+    // Fail silently
+  }
+}

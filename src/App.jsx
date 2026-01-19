@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { loadTasks, saveTasks } from "./utils/storage.js";
+import { useState, useEffect, useMemo } from "react";
+import { loadTasks, saveTasks, loadSortOrder, saveSortOrder } from "./utils/storage.js";
 import Header from "./components/Header.jsx";
 import TaskInput from "./components/TaskInput.jsx";
 import FilterTabs from "./components/FilterTabs.jsx";
@@ -9,11 +9,17 @@ import Footer from "./components/Footer.jsx";
 export default function App() {
   const [tasks, setTasks] = useState(() => loadTasks());
   const [filter, setFilter] = useState('all');
+  const [sortOrder, setSortOrder] = useState(() => loadSortOrder());
 
   // Sync tasks to localStorage whenever they change
   useEffect(() => {
     saveTasks(tasks);
   }, [tasks]);
+
+  // Sync sort order to localStorage whenever it changes
+  useEffect(() => {
+    saveSortOrder(sortOrder);
+  }, [sortOrder]);
 
   // Add task (newest first, crypto.randomUUID ID)
   const handleAddTask = (title) => {
@@ -58,17 +64,31 @@ export default function App() {
     );
   };
 
+  // Toggle sort order
+  const handleToggleSort = () => {
+    setSortOrder(prev => prev === 'newest' ? 'oldest' : 'newest');
+  };
+
   // Change filter
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
   };
 
   // Derive filteredTasks based on filter
-  const filteredTasks = filter === 'pending'
-    ? tasks.filter(task => !task.completed)
-    : filter === 'completed'
-    ? tasks.filter(task => task.completed)
-    : tasks;
+  const filteredTasks = useMemo(() => {
+    let filtered = filter === 'pending'
+      ? tasks.filter(task => !task.completed)
+      : filter === 'completed'
+      ? tasks.filter(task => task.completed)
+      : tasks;
+
+    // Sort tasks without mutating original array
+    return [...filtered].sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+  }, [tasks, filter, sortOrder]);
 
   const pendingCount = tasks.filter(t => !t.completed).length;
   const completedCount = tasks.filter(t => t.completed).length;
@@ -77,7 +97,11 @@ export default function App() {
     <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
       <div className="w-full max-w-xl bg-neutral-900 rounded-2xl p-6 shadow-xl">
         <div className="space-y-6">
-          <Header pendingCount={pendingCount} />
+          <Header 
+            pendingCount={pendingCount} 
+            sortOrder={sortOrder}
+            onToggleSort={handleToggleSort}
+          />
           <TaskInput onAdd={handleAddTask} />
           <FilterTabs value={filter} onChange={handleFilterChange} />
           <TaskList
