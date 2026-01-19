@@ -1,16 +1,82 @@
-# React + Vite
+# Todo List
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A minimal, fast, and clean Todo application built to focus on fundamentals:
+clear state management, local persistence, and a polished UI without unnecessary complexity.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- Create, complete, and delete tasks
+- Filter tasks by:
+  - All
+  - Pending
+  - Completed
+- Persistent storage using browser `localStorage`
+- Lightweight and fast
+- Sorting options (newest first / oldest first)
+- Inline edit feature.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React
+- Vite
+- Tailwind CSS
+- Local Storage (no backend)
+
+---
+
+## Data Persistence
+
+Tasks are stored in the browser using `localStorage`.
+
+This means:
+- Tasks persist across page reloads
+- Tasks are scoped per browser and per device
+- There is no account system or cloud sync
+
+Mock / seed data is used **only for development reference**.
+
+---
+
+## Task Model
+
+The app uses a deliberately minimal task structure:
+
+```ts
+Task {
+  id: string
+  title: string
+  completed: boolean
+  createdAt: number
+}
+```
+---
+
+## Running Locally
+
+```ts
+npm install
+npm run dev
+```
+
+### The app will be available at:
+
+```ts
+http://localhost:5173
+```
+
+
+### What This App Does NOT Include (By Design)
+
+- User authentication
+
+- Backend or database
+
+- Due dates or reminders
+
+These omissions are intentional to keep the project focused, readable, and easy to extend.
+
+
