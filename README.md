@@ -1,6 +1,7 @@
 # Todo List
 
 A minimal, fast, and clean Todo application built to focus on fundamentals:
+clear state management, local persistence, and a polished UI without unnecessary complexity.
 
 ---
 
@@ -13,6 +14,8 @@ A minimal, fast, and clean Todo application built to focus on fundamentals:
   - Completed
 - Persistent storage using browser `localStorage`
 - Lightweight and fast
+- Sorting options (newest first / oldest first)
+- Inline edit feature.
 
 ---
 
@@ -34,7 +37,9 @@ This means:
 - Tasks are scoped per browser and per device
 - There is no account system or cloud sync
 
+Mock / seed data is used **only for development reference**.
 
+---
 
 ## Task Model
 
@@ -75,13 +80,3 @@ http://localhost:5173
 These omissions are intentional to keep the project focused, readable, and easy to extend.
 
 
-
-### Future Improvements (Optional)
-
-Inline task editing
-
-Sorting options (newest first / oldest first)
-
-Light / dark theme toggle
-
-Accessibility refinements

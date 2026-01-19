@@ -1,47 +1,44 @@
-import { useState, useEffect } from "react";
-import { loadTasks, saveTasks } from "./utils/storage.js";
+import { useState, useEffect, useMemo } from "react";
+import { loadTasks, saveTasks, loadSortOrder, saveSortOrder } from "./utils/storage.js";
 import Header from "./components/Header.jsx";
 import TaskInput from "./components/TaskInput.jsx";
 import FilterTabs from "./components/FilterTabs.jsx";
 import TaskList from "./components/TaskList.jsx";
+import Footer from "./components/Footer.jsx";
 
 export default function App() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(() => loadTasks());
   const [filter, setFilter] = useState('all');
+  const [sortOrder, setSortOrder] = useState(() => loadSortOrder());
 
-  // Load tasks on initialization
+  // Sync tasks to localStorage whenever they change
   useEffect(() => {
-    const loadedTasks = loadTasks();
-    setTasks(loadedTasks);
-  }, []);
+    saveTasks(tasks);
+  }, [tasks]);
 
-  // Helper to update tasks and save to localStorage
-  const updateTasks = (updater) => {
-    setTasks(prevTasks => {
-      const updated = updater(prevTasks);
-      saveTasks(updated);
-      return updated;
-    });
-  };
+  // Sync sort order to localStorage whenever it changes
+  useEffect(() => {
+    saveSortOrder(sortOrder);
+  }, [sortOrder]);
 
-  // Add task (newest first, Date.now ID)
+  // Add task (newest first, crypto.randomUUID ID)
   const handleAddTask = (title) => {
     const trimmed = title.trim();
     if (!trimmed) return;
 
     const newTask = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       title: trimmed,
       completed: false,
       createdAt: new Date().toISOString()
     };
 
-    updateTasks(prevTasks => [newTask, ...prevTasks]);
+    setTasks(prevTasks => [newTask, ...prevTasks]);
   };
 
   // Toggle complete
   const handleToggleComplete = (id) => {
-    updateTasks(prevTasks =>
+    setTasks(prevTasks =>
       prevTasks.map(task =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
@@ -50,7 +47,26 @@ export default function App() {
 
   // Delete task
   const handleDeleteTask = (id) => {
-    updateTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+  };
+
+  // Clear completed tasks
+  const handleClearCompleted = () => {
+    setTasks(prevTasks => prevTasks.filter(task => !task.completed));
+  };
+
+  // Edit task title
+  const handleEditTask = (id, newTitle) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === id ? { ...task, title: newTitle } : task
+      )
+    );
+  };
+
+  // Toggle sort order
+  const handleToggleSort = () => {
+    setSortOrder(prev => prev === 'newest' ? 'oldest' : 'newest');
   };
 
   // Change filter
@@ -59,25 +75,44 @@ export default function App() {
   };
 
   // Derive filteredTasks based on filter
-  const filteredTasks = filter === 'pending'
-    ? tasks.filter(task => !task.completed)
-    : filter === 'completed'
-    ? tasks.filter(task => task.completed)
-    : tasks;
+  const filteredTasks = useMemo(() => {
+    let filtered = filter === 'pending'
+      ? tasks.filter(task => !task.completed)
+      : filter === 'completed'
+      ? tasks.filter(task => task.completed)
+      : tasks;
+
+    // Sort tasks without mutating original array
+    return [...filtered].sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+  }, [tasks, filter, sortOrder]);
 
   const pendingCount = tasks.filter(t => !t.completed).length;
+  const completedCount = tasks.filter(t => t.completed).length;
 
   return (
     <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
       <div className="w-full max-w-xl bg-neutral-900 rounded-2xl p-6 shadow-xl">
         <div className="space-y-6">
-          <Header pendingCount={pendingCount} />
+          <Header 
+            pendingCount={pendingCount} 
+            sortOrder={sortOrder}
+            onToggleSort={handleToggleSort}
+          />
           <TaskInput onAdd={handleAddTask} />
           <FilterTabs value={filter} onChange={handleFilterChange} />
           <TaskList
             tasks={filteredTasks}
             onToggle={handleToggleComplete}
             onDelete={handleDeleteTask}
+            onEdit={handleEditTask}
+          />
+          <Footer
+            completedCount={completedCount}
+            onClearCompleted={handleClearCompleted}
           />
         </div>
       </div>
