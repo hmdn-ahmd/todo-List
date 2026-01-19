@@ -1,9 +1,6 @@
 # Todo List
 
 A minimal, fast, and clean Todo application built to focus on fundamentals:
-clear state management, local persistence, and a polished UI without unnecessary complexity.
-
-This project is intentionally scoped as a **frontend-first MVP**.
 
 ---
 
@@ -37,9 +34,7 @@ This means:
 - Tasks are scoped per browser and per device
 - There is no account system or cloud sync
 
-Mock / seed data is used **only for development reference** and is not intended for production use.
 
----
 
 ## Task Model
 
@@ -86,8 +81,6 @@ These omissions are intentional to keep the project focused, readable, and easy 
 Inline task editing
 
 Sorting options (newest first / oldest first)
-
-Due dates
 
 Light / dark theme toggle
 
